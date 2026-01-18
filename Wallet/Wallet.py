@@ -12,7 +12,6 @@ class Wallet:
 
     def send_transaction(self, contract=None, function=None, args=None, fund=None):
         if not (contract is None) and contract.name == 'TC':
-            # assert False, "I do not need this path"
             if function == 'deposit':
                 contract.deposit({'note': args, 'called_addr': self._id})
                 # contract.deposit(args)

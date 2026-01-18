@@ -5,7 +5,6 @@ import time
 import pandas as pd
 
 from Mainnet import EthMainnet
-from collections import defaultdict
 
 
 class TornadoCashNovaContract:
@@ -17,7 +16,6 @@ class TornadoCashNovaContract:
             columns=['note hash', 'from', 'to', 'fund', 'in block'])  # log the note's fund
         self.chain = chain
         self.chain.set_balance_of_addr('Nova', 10)
-        # Manage the balance of each note individually
 
     @staticmethod
     def create_note_hash(note):
@@ -34,7 +32,6 @@ class TornadoCashNovaContract:
         note['note hash'] = TornadoCashNovaContract.create_note_hash(note)
         return note
 
-    # ~~ Manage the balance of each note individually ~~
     @staticmethod
     def get_balance_of_note(note):
         return note['fund']
@@ -72,7 +69,6 @@ class TornadoCashNovaContract:
         # arbitrary value of the deposit
         _fund = args.get('fund')  # pass from Wallet
         note = TornadoCashNovaContract.update_note(_note)
-        # arbitrary value of the deposit
         note = TornadoCashNovaContract.set_balance_of_note(note, _fund)
         self._merkle_tree.append(note)
         self.chain.commit({
@@ -98,7 +94,7 @@ class TornadoCashNovaContract:
             note['fund'] -= _fund
             if note['fund'] == 0:
                 self._merkle_tree.remove(note)
-            # record the function call
+            # 记录 call function 的 txn
             self.chain.commit({
                 'txn': EthMainnet.get_transaction_hash(called_addr),
                 'from': called_addr,
@@ -109,7 +105,7 @@ class TornadoCashNovaContract:
                 'gas': self.chain.get_gas_price(),
                 'args': note
             })
-            # record the internal txn
+            # 记录实际转账的 txn
             self.chain.commit({
                 'txn': EthMainnet.get_transaction_hash(note.get('to')),
                 'from': 'Nova',

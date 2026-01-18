@@ -183,9 +183,6 @@ class TornadoCashEvaderControlledEnv(gym.Env):
                 self.agent_challenge_table[DEPOSIT_CALL_ADDR] = max(0,
                                                                     self.agent_challenge_table[DEPOSIT_CALL_ADDR] - 1)
                 reward = (-1 if self.detector.run_tutela_heuristics_check() else 1)
-                # if self.CONTROL['d'] < self.control:
-                #     self.CONTROL['d'] = self.CONTROL['d'] + 1
-                #     reward = (-1 if self.detector.run_tutela_heuristics_check() else 1)
                 txn = self.chain.main_net_txn.iloc[-1].txn
             else:
                 CHECK = False
@@ -198,9 +195,6 @@ class TornadoCashEvaderControlledEnv(gym.Env):
                 wallet.send_transaction(contract=self.tc, function='withdraw', args=note)
                 self.agent.remove_note(note)
                 reward = (-1 if self.detector.run_tutela_heuristics_check() else 1)
-                # if self.CONTROL['w'] < self.control:
-                #     self.CONTROL['w'] = self.CONTROL['w'] + 1
-                #     reward = (-1 if self.detector.run_tutela_heuristics_check() else 1)
                 txn = self.chain.main_net_txn.iloc[-1].txn
 
             else:
@@ -231,9 +225,6 @@ class TornadoCashEvaderControlledEnv(gym.Env):
         ])
 
         done = False
-
-        # if self.CONTROL['w'] == self.control and self.CONTROL['d'] == self.control:
-        #     done = True
 
         if sum(self.agent_challenge_table) == 0 and not self.agent.get_notes():
             done = True

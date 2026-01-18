@@ -71,7 +71,7 @@ class TornadoCashContract:
         called_addr = args.get('called_addr')
         if self.verify(note):
             self._merkle_tree.remove(note)
-            # record the function call
+            # 记录 call function 的 txn
             self.chain.commit({
                 'txn': EthMainnet.get_transaction_hash(called_addr),
                 'from': called_addr,
@@ -82,7 +82,7 @@ class TornadoCashContract:
                 'gas': self.chain.get_gas_price(),
                 'args': note
             })
-            # record the internal txn
+            # 记录实际转账的 txn
             self.chain.commit({
                 'txn': EthMainnet.get_transaction_hash(note.get('to')),
                 'from': 'TC',

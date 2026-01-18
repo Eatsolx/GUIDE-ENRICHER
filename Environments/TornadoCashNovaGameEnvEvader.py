@@ -17,6 +17,7 @@ from Utils import NovaUserProvisioning, Mutation
 warnings.filterwarnings("ignore")
 
 
+# 和普通 TC 的区别就是多了 fund 的确认，以及加入了更多的状态来描述 fund 和余额
 class TornadoCashNovaGameEnvEvader(gym.Env):
 
     def __init__(self, env_config: EnvContext):

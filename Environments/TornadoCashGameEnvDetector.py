@@ -29,7 +29,7 @@ class TornadoCashGameEnvDetector(gym.Env):
         self.playground = TornadoCashEvaderControlledEnv(self.evader_env_configs, self.chain, self.tc, self.other)
         self.evader_obs = self.playground.reset()
 
-        # set the sliding window using config
+        # 滑动窗口配置
         self.start = 0
         self.end = self.window_size
         self.state = Util.slice(df=self.chain.get_main_net_txn(), start=self.start, end=self.end,
@@ -45,7 +45,7 @@ class TornadoCashGameEnvDetector(gym.Env):
         self.evader = LoadEvader(checkpoint_path=self.evader_check_point_path, config=self.evader_configs)
         self.playground = TornadoCashEvaderControlledEnv(self.evader_env_configs, self.chain, self.tc, self.other)
 
-        # set the sliding window using config
+        # 滑动窗口配置
         self.start = 0
         self.end = self.window_size
         self.state = Util.slice(df=self.chain.get_main_net_txn(), start=self.start, end=self.end,

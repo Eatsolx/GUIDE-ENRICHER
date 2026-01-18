@@ -45,7 +45,7 @@ class RunGame:
 
     @staticmethod
     def run_iteratively(no_iter_in, log_dir_in=None, data_log_dir_in=None, checkpoint_dir=None, config=None):
-        os.environ["TMPDIR"] = '/data/ravindu/temp_ray'
+        os.environ["TMPDIR"] = '<PATH-TO-TMPDIR>'
         os.environ["CUDA_VISIBLE_DEVICES"] = "3"
         ray.init()
         trainer = RunGame.load_ppo_trainer(config=config)
@@ -105,9 +105,9 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    DETECTOR_DATA_LOG_DIR = "/data/ravindu/detector/data/"
-    DETECTOR_LOG_DIR = "/data/ravindu/detector/log/"
-    DETECTOR_CHECK_POINT_DIR = "/data/ravindu/detector/check_point/"
+    DETECTOR_DATA_LOG_DIR = "<PATH-TO-DATA>"
+    DETECTOR_LOG_DIR = "<PATH-TO-LOG>"
+    DETECTOR_CHECK_POINT_DIR = "<PATH-TO-CHECKPOINT>"
     TEST_NAME = "detector-"
 
     current_datetime = datetime.now()
@@ -127,7 +127,7 @@ if __name__ == '__main__':
         "env_config": {
             'window_size': 1,
             'block_size': 5,
-            'evader_check_point_path': '/data/ravindu/evader/check_point/Challenge-Table-Length-Uniform-Eth-distribution-Test-Length-3-2023-06-19_17-51-03/checkpoint_000496',
+            'evader_check_point_path': '<PATH-TO-CHECKPOINT>',
             'evader_configs': {
                 "env": TornadoCashGameEnvEvader,
                 "num_workers": 1,
@@ -151,7 +151,7 @@ if __name__ == '__main__':
                     "fcnet_hiddens": [64, 64],
                 },
                 "callbacks": CustomCallbackEvader,
-                "framework": "tf",
+                "framework": "torch",
             },
             'evader_env_configs': {
                 'block_size': 5,
@@ -173,7 +173,7 @@ if __name__ == '__main__':
             "fcnet_hiddens": [64, 64],
         },
         "callbacks": CustomCallback,
-        "framework": "tf",
+        "framework": "torch",
     }
 
     no_iter = 50

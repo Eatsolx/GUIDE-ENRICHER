@@ -84,7 +84,7 @@ if __name__ == '__main__':
             "fcnet_hiddens": [64, 64],
         },
         "callbacks": CustomCallbackEvader,
-        "framework": "tf",
+        "framework": "torch",
     }
 
     _param = {
@@ -101,13 +101,13 @@ if __name__ == '__main__':
         'no_of_wallets_for_each_crowd_agent': 100,
         'amount_of_money_in_each_crowd': 100
     }
-    os.environ["TMPDIR"] = '/data/ravindu/temp_ray'
+    os.environ["TMPDIR"] = '<PATH-TO-TMPDIR>'
     os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 
     ray.init()
 
     model = load(
-        '/data/ravindu/evader/check_point/Challenge-Table-Length-Uniform-Eth-distribution-Test-Length-2-with-10-2023-07-04_00-57-17/checkpoint_000998',
+        '<PATH-TO-CHECKPOINT>',
         config)
 
     eval_result = evaluate(model, 500, _param)

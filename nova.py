@@ -75,7 +75,7 @@ class RunGame:
 
     @staticmethod
     def run_iteratively(no_iter_in, log_dir_in, data_log_dir_in, checkpoint_dir, config=None):
-        os.environ["TMPDIR"] = '/home/ravindu/backup/temp'
+        os.environ["TMPDIR"] = '<PATH-TO-TMPDIR>'
         os.environ["CUDA_VISIBLE_DEVICES"] = "3"
         os.environ["RAY_DISABLE_MEMORY_MONITOR"] = "1"
         ray.init()
@@ -213,7 +213,7 @@ if __name__ == '__main__':
             "fcnet_hiddens": fcnet_hiddens,
         },
         "callbacks": CustomCallback,
-        "framework": "tf",
+        "framework": "torch",
     }
     RunGame.run_iteratively(no_iter_in=no_iter, log_dir_in=log_dir, data_log_dir_in=data_log_dir,
                             checkpoint_dir=check_point_dir, config=_config)

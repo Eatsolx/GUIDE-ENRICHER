@@ -5,6 +5,7 @@ import pandas as pd
 import ray
 from ray.rllib.algorithms.callbacks import DefaultCallbacks
 from ray.rllib.algorithms.ppo import PPO
+from ray.rllib.algorithms.ppo import PPOConfig
 
 from Contract import TornadoCashContract, OtherContract
 from Environments import TornadoCashGameEnvEvader, TornadoCashEvaderControlledEnv
@@ -61,31 +62,41 @@ class CustomCallbackEvader(DefaultCallbacks):
 
 
 if __name__ == '__main__':
-    config = {
-        "env": TornadoCashGameEnvEvader,
-        "num_workers": 1,
-        "horizon": 10000,
-        "env_config": {
-            'block_size': 5,
-            'max_wait_time': 5,
-            'no_addresses_agent_challenge_table': 2,
-            'agent_challenge_table': [30, 30],
-            'agent_address_range_starts': 0,
-            'agent_address_range_end': 250,
-            'agent_mutable_address_range_start': 10,
-            'agent_mutable_address_range_end': 20,
-            'crowd_address_range_starts': 250,
-            'no_of_crowd': 200,
-            'no_of_wallets_for_each_crowd_agent': 100,
-            'amount_of_money_in_each_crowd': 100
-        },
-        "model": {
-            # "custom_model": "model_with_batch_normalization"
-            "fcnet_hiddens": [64, 64],
-        },
-        "callbacks": CustomCallbackEvader,
-        "framework": "torch",
+    _env_config =  {
+        'block_size': 5,
+        'max_wait_time': 5,
+        'no_addresses_agent_challenge_table': 2,
+        'agent_challenge_table': [30, 30],
+        'agent_address_range_starts': 0,
+        'agent_address_range_end': 250,
+        'agent_mutable_address_range_start': 10,
+        'agent_mutable_address_range_end': 20,
+        'crowd_address_range_starts': 250,
+        'no_of_crowd': 200,
+        'no_of_wallets_for_each_crowd_agent': 100,
+        'amount_of_money_in_each_crowd': 100
     }
+
+    config = (
+        PPOConfig()
+        .environment(
+            env=TornadoCashGameEnvEvader,
+            env_config=_env_config
+        )
+        .rollouts(
+            num_rollout_workers=1,
+            horizon=10000
+        )
+        .training(
+            model={
+                # "custom_model": "model_with_batch_normalization"
+                "fcnet_hiddens": [64, 64]
+            }
+        )
+        .callbacks(CustomCallbackEvader)
+        .framework("torch")
+        .to_dict()
+    )
 
     _param = {
         'block_size': 5,

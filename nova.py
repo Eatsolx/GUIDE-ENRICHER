@@ -11,6 +11,7 @@ from ray import tune
 # from ray.rllib.agents.ppo import PPOTrainer  # Ray version: 2.0.0
 from ray.rllib.algorithms.callbacks import DefaultCallbacks
 from ray.rllib.algorithms.ppo import PPO  # for env Ray version: 2.4.0
+from ray.rllib.algorithms.ppo import PPOConfig
 from ray.rllib.models import ModelCatalog
 from tqdm import tqdm
 
@@ -190,31 +191,43 @@ if __name__ == '__main__':
     os.mkdir(log_dir)
     os.mkdir(check_point_dir)
     ModelCatalog.register_custom_model("model_with_batch_normalization", GameNormModel)
-    _config = {
-        "env": TornadoCashNovaGameEnvEvader,
-        "num_workers": 1,
-        "horizon": 10000,
-        "env_config": {
-            'block_size': 5,
-            'max_wait_time': 5,
-            'no_addresses_agent_challenge_table': no_addresses_agent_challenge_table,
-            'agent_challenge_table': agent_challenge_table,
-            'agent_address_range_starts': agent_address_range_starts,
-            'agent_address_range_end': agent_address_range_end,
-            'agent_mutable_address_range_start': agent_mutable_address_range_start,
-            'agent_mutable_address_range_end': agent_mutable_address_range_end,
-            'crowd_address_range_starts': crowd_address_range_starts,
-            'no_of_crowd': no_of_crowd,
-            'no_of_wallets_for_each_crowd_agent': no_of_wallets_for_each_crowd_agent,
-            'amount_of_money_in_each_crowd': amount_of_money_in_each_crowd
-        },
-        "model": {
-            # "custom_model": "model_with_batch_normalization"
-            "fcnet_hiddens": fcnet_hiddens,
-        },
-        "callbacks": CustomCallback,
-        "framework": "torch",
+
+    _env_config = {
+        'block_size': 5,
+        'max_wait_time': 5,
+        'no_addresses_agent_challenge_table': no_addresses_agent_challenge_table,
+        'agent_challenge_table': agent_challenge_table,
+        'agent_address_range_starts': agent_address_range_starts,
+        'agent_address_range_end': agent_address_range_end,
+        'agent_mutable_address_range_start': agent_mutable_address_range_start,
+        'agent_mutable_address_range_end': agent_mutable_address_range_end,
+        'crowd_address_range_starts': crowd_address_range_starts,
+        'no_of_crowd': no_of_crowd,
+        'no_of_wallets_for_each_crowd_agent': no_of_wallets_for_each_crowd_agent,
+        'amount_of_money_in_each_crowd': amount_of_money_in_each_crowd
     }
+
+    _config = (
+        PPOConfig()
+        .environment(
+            env=TornadoCashNovaGameEnvEvader,
+            env_config=_env_config
+        )
+        .rollouts(
+            num_rollout_workers=1,
+            horizon=10000
+        )
+        .training(
+            model = {
+                #"custom_model": "model_with_batch_normalization",
+                "fcnet_hiddens": fcnet_hiddens,
+            },
+        )
+        .callbacks(CustomCallback)
+        .framework("torch")
+        .to_dict()
+    )
+
     RunGame.run_iteratively(no_iter_in=no_iter, log_dir_in=log_dir, data_log_dir_in=data_log_dir,
                             checkpoint_dir=check_point_dir, config=_config)
 

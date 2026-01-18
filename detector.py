@@ -120,61 +120,66 @@ if __name__ == '__main__':
     os.mkdir(log_dir)
     os.mkdir(check_point_dir)
 
-    detector_config = {
-        "env": TornadoCashGameEnvDetector,
-        "num_workers": 1,
-        "horizon": 10000,
-        "env_config": {
-            'window_size': 1,
-            'block_size': 5,
-            'evader_check_point_path': '<PATH-TO-CHECKPOINT>',
-            'evader_configs': {
-                "env": TornadoCashGameEnvEvader,
-                "num_workers": 1,
-                "horizon": 10000,
-                "env_config": {
-                    'block_size': 5,
-                    'max_wait_time': 5,
-                    'no_addresses_agent_challenge_table': 3,
-                    'agent_challenge_table': [3, 3, 3],
-                    'agent_address_range_starts': 0,
-                    'agent_address_range_end': 60,
-                    'agent_mutable_address_range_start': 10,
-                    'agent_mutable_address_range_end': 20,
-                    'crowd_address_range_starts': 60,
-                    'no_of_crowd': 100,
-                    'no_of_wallets_for_each_crowd_agent': 100,
-                    'amount_of_money_in_each_crowd': 100
-                },
-                "model": {
-                    # "custom_model": "model_with_batch_normalization"
-                    "fcnet_hiddens": [64, 64],
-                },
-                "callbacks": CustomCallbackEvader,
-                "framework": "torch",
-            },
-            'evader_env_configs': {
-                'block_size': 5,
-                'max_wait_time': 5,
-                'no_addresses_agent_challenge_table': 3,
-                'agent_challenge_table': [3, 3, 3],
-                'agent_address_range_starts': 0,
-                'agent_address_range_end': 60,
-                'agent_mutable_address_range_start': 10,
-                'agent_mutable_address_range_end': 20,
-                'crowd_address_range_starts': 60,
-                'no_of_crowd': 100,
-                'no_of_wallets_for_each_crowd_agent': 100,
-                'amount_of_money_in_each_crowd': 100
-            },
-        },
-        "model": {
-            # "custom_model": "model_with_batch_normalization"
-            "fcnet_hiddens": [64, 64],
-        },
-        "callbacks": CustomCallback,
-        "framework": "torch",
+    from ray.rllib.algorithms.ppo import PPOConfig
+
+    evader_common_env_params = {
+        'block_size': 5,
+        'max_wait_time': 5,
+        'no_addresses_agent_challenge_table': 3,
+        'agent_challenge_table': [3, 3, 3],
+        'agent_address_range_starts': 0,
+        'agent_address_range_end': 60,
+        'agent_mutable_address_range_start': 10,
+        'agent_mutable_address_range_end': 20,
+        'crowd_address_range_starts': 60,
+        'no_of_crowd': 100,
+        'no_of_wallets_for_each_crowd_agent': 100,
+        'amount_of_money_in_each_crowd': 100
     }
+
+    evader_agent_config = (
+        PPOConfig()
+        .environment(
+            env=TornadoCashGameEnvEvader,
+            env_config=evader_common_env_params
+        )
+        .framework("torch")
+        .rollouts(
+            num_rollout_workers=1,
+            horizon=10000
+        )
+        .training(
+            model={"fcnet_hiddens": [64, 64]}
+        )
+        .callbacks(CustomCallbackEvader)
+        .to_dict()
+    )
+
+    detector_env_params = {
+        'window_size': 1,
+        'block_size': 5,
+        'evader_check_point_path': '<PATH-TO-CHECKPOINT>',
+        'evader_configs': evader_agent_config,
+        'evader_env_configs': evader_common_env_params
+    }
+
+    detector_config = (
+        PPOConfig()
+        .environment(
+            env=TornadoCashGameEnvDetector,
+            env_config=detector_env_params
+        )
+        .framework("torch")
+        .rollouts(
+            num_rollout_workers=1,
+            horizon=10000
+        )
+        .training(
+            model={"fcnet_hiddens": [64, 64]}
+        )
+        .callbacks(CustomCallback)
+        .to_dict()
+    )
 
     no_iter = 50
     RunGame.run_iteratively(log_dir_in=log_dir, data_log_dir_in=data_log_dir, checkpoint_dir=check_point_dir,
